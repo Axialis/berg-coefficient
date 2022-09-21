@@ -1,8 +1,11 @@
+import '../global.scss'
 const Chart = require('../node_modules/chart.js/dist/chart');
 const ANGLE = 180;
 const CHART_POINT = 180 + 1;
 Chart.defaults.font.size = 12;
 Chart.defaults.font.weight = 'lighter';
+
+addEventListener('resize', (event) => { location.reload() });
 
 function Theta(degree: number): number {
     return (degree * Math.PI / 180);
@@ -12,19 +15,28 @@ function createAlphaData(harmonic: number): number[] {
     const alpha_k: number[] = new Array(CHART_POINT);
     if (harmonic === 0) {
         for (let i = 0; i < CHART_POINT; i += 1) {
-            alpha_k[i] = (Math.sin(Theta(i)) - Theta(i) * Math.cos(Theta(i)) / (Math.PI * (1 - Math.cos(Theta(i)))));
+            alpha_k[i] = ((Math.sin(Theta(i)) - Theta(i) * Math.cos(Theta(i))) / (Math.PI * (1 - Math.cos(Theta(i)))));
+            if (isNaN(alpha_k[i])) {
+                alpha_k[i] = 0;
+            }
         }
     }
 
     if (harmonic === 1) {
         for (let i = 0; i < CHART_POINT; i += 1) {
             alpha_k[i] = (Theta(i) - Math.sin(Theta(i)) * Math.cos(Theta(i))) / (Math.PI * (1 - Math.cos(Theta(i))));
+            if (isNaN(alpha_k[i])) {
+                alpha_k[i] = 0;
+            }
         }
     }
 
     if (harmonic > 1) {
         for (let i = 0; i < CHART_POINT; i += 1) {
-            alpha_k[i] = 2 * ((Math.sin(harmonic * Theta(i)) * Math.cos(Theta(i)) - harmonic * Math.cos(harmonic * Theta(i)) * Math.sin(Theta(i))) / (harmonic * Math.PI * (harmonic ** 2 - 1) * (1 - Math.cos(Theta(i)))))
+            alpha_k[i] = 2 * ((Math.sin(harmonic * Theta(i)) * Math.cos(Theta(i)) - harmonic * Math.cos(harmonic * Theta(i)) * Math.sin(Theta(i))) / (harmonic * Math.PI * (harmonic ** 2 - 1) * (1 - Math.cos(Theta(i)))));
+            if (isNaN(alpha_k[i])) {
+                alpha_k[i] = 0;
+            }
         }
     }
     return alpha_k;
@@ -32,7 +44,7 @@ function createAlphaData(harmonic: number): number[] {
 
 const labels = [];
 for (let i = 0; i < CHART_POINT; ++i) {
-    labels.push(i.toString());
+    labels.push(`${i.toString()}°`);
 }
 
 const tableStyle = function (
@@ -44,7 +56,9 @@ const tableStyle = function (
     tension: number,
 ) {
     let label = '';
-    if (alphaNumber === 1) {
+    if (alphaNumber === 0) {
+        label = 'α₀';
+    } else if (alphaNumber === 1) {
         label = 'α₁';
     } else if (alphaNumber === 2) {
         label = 'α₂';
@@ -72,6 +86,7 @@ const tableStyle = function (
 const data = {
     labels: labels,
     datasets: [
+        tableStyle(0, '#000000', 1, 0, 10, 0.4),
         tableStyle(1, '#34568B', 1, 0, 10, 0.4),
         tableStyle(2, '#FF6F61', 1, 0, 10, 0.4),
         tableStyle(3, '#009B77', 1, 0, 10, 0.4),
@@ -84,7 +99,7 @@ const config = {
     type: 'line',
     data: data,
     options: {
-        responsive: true,
+        responsive: false,
         plugins: {
             title: {
                 display: true,
@@ -107,7 +122,7 @@ const config = {
                 title: {
                     display: true,
                     text: 'Θ',
-                }
+                },
             },
             y: {
                 display: true,
