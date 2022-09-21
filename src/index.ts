@@ -5,8 +5,6 @@ const CHART_POINT = 180 + 1;
 Chart.defaults.font.size = 12;
 Chart.defaults.font.weight = 'lighter';
 
-addEventListener('resize', (event) => { location.reload() });
-
 function Theta(degree: number): number {
     return (degree * Math.PI / 180);
 }
