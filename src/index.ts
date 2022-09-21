@@ -101,7 +101,7 @@ const config = {
         plugins: {
             title: {
                 display: true,
-                text: 'Berger Coefficient'
+                text: 'Berg Coefficient'
             },
             legend: {
                 labels: {
@@ -136,6 +136,6 @@ const config = {
 };
 
 const myChart = new Chart(
-    document.getElementById('myChart'),
+    document.getElementById('Chart'),
     config
 );
