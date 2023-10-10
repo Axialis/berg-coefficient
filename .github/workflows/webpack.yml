@@ -1,6 +1,6 @@
 name: Deploy
 run-name: ${{github.actor}}
-on: [workflow_run]
+on: [push]
 jobs:
   Working:
     runs-on: ubuntu-latest
