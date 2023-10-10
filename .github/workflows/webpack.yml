@@ -2,8 +2,17 @@ name: Deploy
 run-name: ${{github.actor}}
 on: [push]
 jobs:
-  Working:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 14, 16, 18 ]
+    name: Node ${{ matrix.node }} sample
     steps:
-      - run: ls
-      - run: echo "Hello"
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: npm test
